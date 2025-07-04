@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字母探险家 (Alphabet Explorer)</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body tabindex="0">
+    <div id="game-screen" class="game-container screen hidden">
+        <div class="game-header">
+            <div class="score-container">
+                <span>分数: </span>
+                <span id="score">0</span>
+            </div>
+            <div class="level-container">
+                <span>等级: </span>
+                <span id="level">1</span>
+            </div>
+            <div class="lives-container">
+                <span>生命: </span>
+                <span id="lives">❤️❤️❤️</span>
+            </div>
+            <div class="crystal-container">
+                <span>能量水晶: </span>
+                <span id="crystals">0</span>
+                <span class="crystal-icon">💎</span>
+            </div>
+            <div class="combo-container">
+                <span>连击: </span>
+                <span id="combo">0</span>
+            </div>
+        </div>
+        
+        <div id="game-area">
+            <div id="kiki" class="character"></div>
+            <!-- 字母将在这里动态生成 -->
+        </div>
+        
+        <div class="keyboard-container">
+            <div class="keyboard">
+                <div class="keyboard-row">
+                    <div class="key" data-key="Q">Q</div>
+                    <div class="key" data-key="W">W</div>
+                    <div class="key" data-key="E">E</div>
+                    <div class="key" data-key="R">R</div>
+                    <div class="key" data-key="T">T</div>
+                    <div class="key" data-key="Y">Y</div>
+                    <div class="key" data-key="U">U</div>
+                    <div class="key" data-key="I">I</div>
+                    <div class="key" data-key="O">O</div>
+                    <div class="key" data-key="P">P</div>
+                </div>
+                <div class="keyboard-row">
+                    <div class="key" data-key="A">A</div>
+                    <div class="key" data-key="S">S</div>
+                    <div class="key" data-key="D">D</div>
+                    <div class="key" data-key="F">F</div>
+                    <div class="key" data-key="G">G</div>
+                    <div class="key" data-key="H">H</div>
+                    <div class="key" data-key="J">J</div>
+                    <div class="key" data-key="K">K</div>
+                    <div class="key" data-key="L">L</div>
+                </div>
+                <div class="keyboard-row">
+                    <div class="key" data-key="Z">Z</div>
+                    <div class="key" data-key="X">X</div>
+                    <div class="key" data-key="C">C</div>
+                    <div class="key" data-key="V">V</div>
+                    <div class="key" data-key="B">B</div>
+                    <div class="key" data-key="N">N</div>
+                    <div class="key" data-key="M">M</div>
+                </div>
+            </div>
+            <div class="game-controls">
+                <button id="home-button" class="control-button"><i class="fas fa-home"></i></button>
+                <button id="alphabet-button" class="control-button"><i class="fas fa-book"></i></button>
+                <button id="achievements-button" class="control-button"><i class="fas fa-trophy"></i></button>
+                <button id="settings-button" class="control-button"><i class="fas fa-cog"></i></button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 开始屏幕 -->
+    <div id="start-screen" class="overlay screen">
+        <div class="start-content">
+            <h1>字母探险家</h1>
+            <h2>Alphabet Explorer</h2>
+            <p>帮助Kiki收集掉落的字母，恢复字符大陆的秩序！</p>
+            <div class="game-mode-selection">
+                <button id="adventure-button" class="mode-button">冒险模式</button>
+                <button id="challenge-button" class="mode-button">挑战模式</button>
+                <button id="practice-button" class="mode-button">练习模式</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 游戏结束屏幕 -->
+    <div id="game-over" class="overlay hidden screen">
+        <div class="game-over-content">
+            <h2>冒险结束</h2>
+            <p>你的最终得分: <span id="final-score">0</span></p>
+            <p>获得能量水晶: <span id="earned-crystals">0</span> 💎</p>
+            <button id="restart-button">再次挑战</button>
+            <button id="home-return-button" class="back-button">返回主页</button>
+        </div>
+    </div>
+    
+    <!-- 冒险模式选择关卡 -->
+    <div id="adventure-select" class="overlay hidden screen">
+        <div class="adventure-content">
+            <h2>冒险模式</h2>
+            <div class="world-selection">
+                <div class="world" data-world="forest">
+                    <h3>森林小径</h3>
+                    <div class="level-grid">
+                        <div class="level-item" data-level="1">1</div>
+                        <div class="level-item" data-level="2">2</div>
+                        <div class="level-item" data-level="3">3</div>
+                        <div class="level-item locked" data-level="4">4</div>
+                        <div class="level-item locked" data-level="5">5</div>
+                    </div>
+                </div>
+                <div class="world locked" data-world="ocean">
+                    <h3>海洋神殿</h3>
+                    <p>完成森林小径解锁</p>
+                </div>
+                <div class="world locked" data-world="sky">
+                    <h3>天空之城</h3>
+                    <p>完成海洋神殿解锁</p>
+                </div>
+            </div>
+            <button id="adventure-back" class="back-button">返回</button>
+        </div>
+    </div>
+    
+    <!-- 挑战模式选择 -->
+    <div id="challenge-select" class="overlay hidden screen">
+        <div class="challenge-content">
+            <h2>挑战模式</h2>
+            <div class="challenge-options">
+                <div class="challenge-option" data-challenge="letter-rain">
+                    <h3>字母雨</h3>
+                    <p>接住从天而降的字母</p>
+                    <button class="play-challenge">开始</button>
+                </div>
+                <div class="challenge-option" data-challenge="word-storm">
+                    <h3>单词风暴</h3>
+                    <p>快速输入出现的单词</p>
+                    <button class="play-challenge">开始</button>
+                </div>
+            </div>
+            <button id="challenge-back" class="back-button">返回</button>
+        </div>
+    </div>
+    
+    <!-- 练习模式选择 -->
+    <div id="practice-select" class="overlay hidden screen">
+        <div class="practice-content">
+            <h2>练习模式</h2>
+            <div class="practice-options">
+                <div class="practice-option" data-practice="top-row">
+                    <h3>上排键练习</h3>
+                    <p>QWERTYUIOP</p>
+                    <button class="start-practice">开始</button>
+                </div>
+                <div class="practice-option" data-practice="home-row">
+                    <h3>中排键练习</h3>
+                    <p>ASDFGHJKL</p>
+                    <button class="start-practice">开始</button>
+                </div>
+                <div class="practice-option" data-practice="bottom-row">
+                    <h3>下排键练习</h3>
+                    <p>ZXCVBNM</p>
+                    <button class="start-practice">开始</button>
+                </div>
+                <div class="practice-option" data-practice="custom">
+                    <h3>自定义练习</h3>
+                    <p>选择特定字母练习</p>
+                    <button class="start-practice">开始</button>
+                </div>
+            </div>
+            <button id="practice-back" class="back-button">返回</button>
+        </div>
+    </div>
+    
+    <!-- Kiki的家 -->
+    <div id="kiki-home" class="overlay hidden screen">
+        <div class="home-content">
+            <h2>Kiki的家</h2>
+            <div class="home-view">
+                <div class="home-interior">
+                    <!-- 这里将显示Kiki的家和装饰品 -->
+                </div>
+                <div class="kiki-customization">
+                    <h3>装扮Kiki</h3>
+                    <div class="customization-options">
+                        <div class="option" data-type="skin" data-value="default">默认皮肤</div>
+                        <div class="option locked" data-type="skin" data-value="blue">蓝色皮肤 (100💎)</div>
+                        <div class="option locked" data-type="hat" data-value="cap">棒球帽 (50💎)</div>
+                        <div class="option locked" data-type="accessory" data-value="glasses">眼镜 (30💎)</div>
+                    </div>
+                </div>
+                <div class="home-decoration">
+                    <h3>家居装饰</h3>
+                    <div class="decoration-options">
+                        <div class="option" data-type="wallpaper" data-value="default">默认壁纸</div>
+                        <div class="option locked" data-type="wallpaper" data-value="stars">星空壁纸 (80💎)</div>
+                        <div class="option locked" data-type="furniture" data-value="bookshelf">书架 (120💎)</div>
+                        <div class="option locked" data-type="furniture" data-value="plant">盆栽 (40💎)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="crystal-display">
+                <span>能量水晶: </span>
+                <span id="home-crystals">0</span>
+                <span>💎</span>
+            </div>
+            <button id="home-back" class="back-button">返回游戏</button>
+        </div>
+    </div>
+    
+    <!-- 字母图鉴 -->
+    <div id="alphabet-book" class="overlay hidden screen">
+        <div class="alphabet-content">
+            <h2>字母图鉴</h2>
+            <div class="alphabet-grid">
+                <!-- 这里将动态生成所有字母 -->
+            </div>
+            <button id="alphabet-back" class="back-button">返回</button>
+        </div>
+    </div>
+    
+    <!-- 成就系统 -->
+    <div id="achievements" class="overlay hidden screen">
+        <div class="achievements-content">
+            <h2>成就徽章</h2>
+            <div class="achievements-grid">
+                <div class="achievement" data-id="first-letter">
+                    <div class="achievement-icon">🎯</div>
+                    <div class="achievement-info">
+                        <h3>初次尝试</h3>
+                        <p>成功消除第一个字母</p>
+                    </div>
+                    <div class="achievement-status locked">🔒</div>
+                </div>
+                <div class="achievement" data-id="combo-10">
+                    <div class="achievement-icon">🔥</div>
+                    <div class="achievement-info">
+                        <h3>连击达人</h3>
+                        <p>达成10连击</p>
+                    </div>
+                    <div class="achievement-status locked">🔒</div>
+                </div>
+                <div class="achievement" data-id="level-5">
+                    <div class="achievement-icon">⭐</div>
+                    <div class="achievement-info">
+                        <h3>进阶玩家</h3>
+                        <p>达到5级</p>
+                    </div>
+                    <div class="achievement-status locked">🔒</div>
+                </div>
+                <div class="achievement" data-id="collect-all">
+                    <div class="achievement-icon">📚</div>
+                    <div class="achievement-info">
+                        <h3>字母收藏家</h3>
+                        <p>收集所有26个字母</p>
+                    </div>
+                    <div class="achievement-status locked">🔒</div>
+                </div>
+            </div>
+            <button id="achievements-back" class="back-button">返回</button>
+        </div>
+    </div>
+    
+    <!-- 设置菜单 -->
+    <div id="settings" class="overlay hidden">
+        <div class="settings-content">
+            <h2>设置</h2>
+            <div class="settings-options">
+                <div class="setting">
+                    <label for="music-volume">音乐音量</label>
+                    <input type="range" id="music-volume" min="0" max="100" value="50">
+                </div>
+                <div class="setting">
+                    <label for="sfx-volume">音效音量</label>
+                    <input type="range" id="sfx-volume" min="0" max="100" value="50">
+                </div>
+                <div class="setting">
+                    <label for="difficulty">难度</label>
+                    <select id="difficulty">
+                        <option value="easy">简单</option>
+                        <option value="normal" selected>普通</option>
+                        <option value="hard">困难</option>
+                    </select>
+                </div>
+                <div class="setting">
+                    <label for="parent-mode">家长监控</label>
+                    <button id="parent-mode">进入家长模式</button>
+                </div>
+            </div>
+            <button id="settings-back" class="back-button">返回</button>
+        </div>
+    </div>
+    
+    <!-- 家长监控面板 -->
+    <div id="parent-panel" class="overlay hidden">
+        <div class="parent-content">
+            <h2>家长监控面板</h2>
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3>练习时长</h3>
+                    <p>今日: <span id="today-time">0</span> 分钟</p>
+                    <p>本周: <span id="week-time">0</span> 分钟</p>
+                </div>
+                <div class="stat-card">
+                    <h3>打字速度</h3>
+                    <p>平均: <span id="avg-speed">0</span> WPM</p>
+                    <p>最高: <span id="max-speed">0</span> WPM</p>
+                </div>
+                <div class="stat-card">
+                    <h3>正确率</h3>
+                    <p>平均: <span id="avg-accuracy">0</span>%</p>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3>常见错误</h3>
+                    <ul id="common-errors">
+                        <li>暂无数据</li>
+                    </ul>
+                </div>
+            </div>
+            <button id="parent-back" class="back-button">返回</button>
+        </div>
+    </div>
+    
+    <!-- 自定义练习设置 -->
+    <div id="custom-practice" class="overlay hidden">
+        <div class="custom-practice-content">
+            <h2>自定义练习</h2>
+            <div class="letter-selection">
+                <h3>选择要练习的字母</h3>
+                <div class="letter-checkboxes">
+                    <!-- 这里将动态生成所有字母的复选框 -->
+                </div>
+            </div>
+            <div class="word-import">
+                <h3>导入单词列表</h3>
+                <textarea id="word-list" placeholder="输入单词，每行一个"></textarea>
+                <button id="import-words">导入</button>
+            </div>
+            <button id="start-custom-practice">开始练习</button>
+            <button id="custom-practice-back" class="back-button">返回</button>
+        </div>
+    </div>
+    
+    <audio id="background-music" loop>
+        <source src="https://assets.mixkit.co/music/preview/mixkit-games-worldbeat-466.mp3" type="audio/mpeg">
+    </audio>
+    
+    <script src="script.js"></script>
+</body>
+</html>

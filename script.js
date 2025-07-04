@@ -190,6 +190,9 @@ function setAudioVolume() {
             sounds[sound].volume = volume;
         }
     }
+    if (backgroundMusic) {
+        backgroundMusic.volume = settings.musicVolume / 100;
+    }
 }
 
 // 应用Kiki的装扮
@@ -390,6 +393,20 @@ function checkCollisions() {
         }
     }
 }
+
+// 在用户交互时初始化音频播放
+function initAudioOnInteraction() {
+    if (backgroundMusic) {
+        backgroundMusic.play().catch(() => {});
+        backgroundMusic.pause();
+    }
+}
+
+// 为游戏模式选择按钮添加音频初始化监听
+const modeButtons = document.querySelectorAll('.mode-button');
+modeButtons.forEach(button => {
+    button.addEventListener('click', initAudioOnInteraction);
+});
 
 // 玩家输入处理
 function handleKeyPress(e) {
